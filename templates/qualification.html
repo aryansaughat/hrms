@@ -16,7 +16,7 @@
     {% endwith %}
     <div class="container mt-4">
         <h2>Qualifications</h2>
-        <form method="POST" action="{{ url_for('add_qualifications') }}" id="qualification_form">
+        <form method="POST" action="{{ url_for('add_qualifications') }}" id="qualification_form" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -59,6 +59,17 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="doc_qualification" id='doc_qualification'
+                               onchange="validateFile(this)"required>
+                        <label class="custom-file-label" for="doc_qualification">Experience Letter: </label>
+                        <a class="required" style="font-size: 1em;" id="text">Files should be on Pdf format and less than 500 KB</a>
+                        <br><small id="file_error" class="text-danger"></small><br>
+                    </div>
+                </div>
+            </div>
             <input type="submit" class="btn btn-primary" id="submit_btn" value="Add Qualification">
         </form>
         <br>
@@ -72,6 +83,7 @@
                     <th scope="col"> Board</th>
                     <th scope="col"> Divisions</th>
                     <th scope="col"> Grade/Percentage</th>
+                    <th scope="col"> Qualification Doc</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -86,6 +98,12 @@
                             <td>{{ qualification['Board'] }}</td>
                             <td>{{ qualification['Division'] }}</td>
                             <td>{{ qualification['Grade'] }}</td>
+                            {% if qualification['doc_file_path'] %}
+                            <td><a href="{{ url_for('display_file', filename=qualification['doc_file_path']) }}"
+                                   target="_blank">view document</a></td>
+                        {% else %}
+                            <td>No document found</td>
+                        {% endif %}
                             <td>
                                 <a  class="btn btn-sm btn-primary mr-1" onclick="editQualification('{{ qualification['ID'] }}', '{{ qualification['Employee_ID'] }}', '{{ qualification['Level'] }}', '{{ qualification['College_Name'] }}', '{{ qualification['Board'] }}', '{{ qualification['Division'] }}', '{{ qualification['Grade'] }}')">Edit</a>
                                 <a href="{{ url_for('delete_qualification', id=qualification['ID' ]) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>
@@ -116,4 +134,26 @@
         let submitBtn = document.getElementById('submit_btn');
         submitBtn.value = "Submit Change";
     }
+    function validateFile(fileInput) {
+        let fileError = document.getElementById('file_error');
+        let file = fileInput.files[0];
+        if (!file) {
+            fileError.textContent = 'Please select a file.';
+            return;
+        }
+        if (file.type !== 'application/pdf') {
+            fileError.textContent = 'Please select a PDF file.';
+            return;
+        }
+        let maxSizeInBytes = 500 * 1024;
+        if (file.size > maxSizeInBytes) {
+            fileError.textContent = 'File size exceeds the maximum limit of 500KB.';
+            return;
+        }
+        fileError.textContent = '';
+    }
+    $(".custom-file-input").on("change", function() {
+        let fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
 {% endblock %}

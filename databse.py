@@ -84,6 +84,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS Qualifications (
              Entered_By TEXT,
              Updated_At TIMESTAMP,
              Updated_By TEXT,
+             doc_file_path TEXT,
              FOREIGN KEY (Employee_ID) REFERENCES Employees(ID))''')
 
 c.execute('''CREATE TRIGGER IF NOT EXISTS update_qualifications_Updated_At
@@ -228,6 +229,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS Experiences(
              Entered_By TEXT,
              Updated_At TIMESTAMP,
              Updated_By TEXT,
+             doc_file_path TEXT,
              FOREIGN KEY (Employee_ID) REFERENCES Employee(ID))''')
 
 c.execute('''CREATE TRIGGER IF NOT EXISTS update_Experiences_Updated_At

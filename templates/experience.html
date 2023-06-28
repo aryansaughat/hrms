@@ -16,7 +16,7 @@
     {% endwith %}
     <div class="container mt-4">
         <h2>Experiences</h2>
-        <form method="POST" action="{{ url_for('add_experience') }}" id="experience_form">
+        <form method="POST" action="{{ url_for('add_experience') }}" id="experience_form" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -52,6 +52,15 @@
                         <input type="text" class="form-control" id="duration" name="duration" placeholder="Enter Duration" required>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="doc_experience" id='doc_experience'
+                               onchange="validateFile(this)"required>
+                        <label class="custom-file-label" for="doc_experience">Experience Letter: </label>
+                        <a class="required" style="font-size: 1em;" id="text">Files should be on Pdf format and less than 500 KB</a>
+                        <br><small id="file_error" class="text-danger"></small>
+                    </div>
+                </div>
             </div>
             <br>
             <input type="submit" class="btn btn-primary" id="submit_btn" value="Add experience">
@@ -66,6 +75,7 @@
                 <th scope="col"> Duration</th>
                 <th scope="col"> Position</th>
                 <th scope="col"> Job Description</th>
+                <th scope="col">Experience Letter</th>
                 <th scope="col"> Action</th>
             </tr>
             </thead>
@@ -79,6 +89,12 @@
                         <td>{{ experience['Duration'] }}</td>
                         <td>{{ experience['Job_Title'] }}</td>
                         <td>{{ experience['Job_Description'] }}</td>
+                        {% if experience['doc_file_path'] %}
+                            <td><a href="{{ url_for('display_file', filename=experience['doc_file_path']) }}"
+                                   target="_blank">view document</a></td>
+                        {% else %}
+                            <td>No document found</td>
+                        {% endif %}
                         <td>
                             <a  class="btn btn-sm btn-primary mr-1" onclick="editExperience('{{ experience['Id'] }}', '{{ experience['Employee_ID'] }}', '{{ experience['Company_Name'] }}', '{{ experience['Duration'] }}', '{{ experience['Job_Title'] }}', '{{ experience['Job_Description'] }}')">Edit</a>
                             <a href="{{ url_for('delete_experience', experience_id=experience['Id']) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this experience?')">Delete</a>
@@ -101,9 +117,41 @@
         document.getElementById('duration').value = duration
         document.getElementById('position').value = position;
         document.getElementById('job_description').value = description;
+        let fileInput = document.getElementById('doc_experience');
+        let fileLabel = document.querySelector('label[for="doc_experience"]');
+        let fileText = document.getElementById('text');
+        let fileError = document.getElementById('file_error');
+                fileInput.removeAttribute("required");
+                fileInput.disabled = true;
+                fileInput.style.display = 'none';
+                fileLabel.style.display = 'none';
+                fileText.style.display = 'none';
+                fileError.style.display = 'none';
         let form = document.getElementById('experience_form');
         form.action = "{{ url_for('edit_experience', id='__id__') }}".replace('__id__', id);
         let submitBtn = document.getElementById('submit_btn');
         submitBtn.value = "Submit Change";
     }
+    function validateFile(fileInput) {
+        let fileError = document.getElementById('file_error');
+        let file = fileInput.files[0];
+        if (!file) {
+            fileError.textContent = 'Please select a file.';
+            return;
+        }
+        if (file.type !== 'application/pdf') {
+            fileError.textContent = 'Please select a PDF file.';
+            return;
+        }
+        let maxSizeInBytes = 500 * 1024;
+        if (file.size > maxSizeInBytes) {
+            fileError.textContent = 'File size exceeds the maximum limit of 500KB.';
+            return;
+        }
+        fileError.textContent = '';
+    }
+    $(".custom-file-input").on("change", function() {
+        let fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
 {% endblock %}

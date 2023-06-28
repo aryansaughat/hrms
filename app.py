@@ -22,8 +22,8 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'noreply.hrms2@gmail.com'
 app.config['MAIL_PASSWORD'] = 'bmoknegzgfzscmqs'
 mail = Mail(app)
-#UPLOAD_FOLDER = 'D:/project/employee files'
-UPLOAD_FOLDER = 'G:/project/employee files'
+UPLOAD_FOLDER = 'D:/project/employee files'
+#UPLOAD_FOLDER = 'G:/project/employee files'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DATABASE = 'hrms.db'
 
@@ -666,11 +666,29 @@ def add_qualifications():
         divisions = request.form.get('divisions')
         grade = request.form.get('grade')
         username = session['user_id']
+        resume_file = request.files['doc_qualification']
+        with sqlite3.connect(DATABASE) as conn:
+            c = conn.cursor()
+            select = '''SELECT Employee_ID, Name FROM Users WHERE Username=?'''
+            c.execute(select, (username,))
+            result = c.fetchone()
+            name = result[1]
+            id = result[0]
+
+        folder_path = os.path.join(app.config['UPLOAD_FOLDER'], name + "_" + str(id))
+        os.makedirs(folder_path, exist_ok=True)
+        resume_file_path = ''
+        if resume_file:
+            filename = secure_filename(resume_file.filename)
+            extension = os.path.splitext(filename)[1]
+            resume_file_path = os.path.join(folder_path, f'qualification{extension}')
+            resume_file.save(resume_file_path)
         try:
             conn = sqlite3.connect(DATABASE)
             c = conn.cursor()
-            insert_query = "INSERT INTO qualifications (employee_id, level, college_name, board, division, grade, Entered_by) VALUES (?, ?, ?, ?, ?, ?, ?)"
-            c.execute(insert_query, (employee_id, qualification_name, college_name, board, divisions, grade, username))
+            insert_query = '''INSERT INTO qualifications (employee_id, level, college_name, board, division, grade, 
+                                Entered_by, doc_file_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'''
+            c.execute(insert_query, (employee_id, qualification_name, college_name, board, divisions, grade, username, resume_file_path))
             conn.commit()
             if conn.total_changes > 0:
                 flash('Qualification added successfully', 'success')
@@ -750,14 +768,34 @@ def add_experience():
         company_name = request.form.get('company_name')
         position = request.form.get('position')
         duration = request.form.get('duration')
+        resume_file = request.files['doc_experience']
+        with sqlite3.connect(DATABASE) as conn:
+            c = conn.cursor()
+            select = '''SELECT Employee_ID, Name FROM Users WHERE Username=?'''
+            c.execute(select, (username,))
+            result = c.fetchone()
+            name = result[1]
+            id = result[0]
+
+        folder_path = os.path.join(app.config['UPLOAD_FOLDER'], name + "_" + str(id))
+        os.makedirs(folder_path, exist_ok=True)
+        resume_file_path = ''
+        if resume_file:
+            filename = secure_filename(resume_file.filename)
+            extension = os.path.splitext(filename)[1]
+            resume_file_path = os.path.join(folder_path, f'experienceletter{extension}')
+            resume_file.save(resume_file_path)
+
         try:
             conn = sqlite3.connect(DATABASE)
             c = conn.cursor()
             insert_query = '''INSERT INTO experiences (employee_id, company_name, duration,
-                                job_title, job_description, entered_by) VALUES (?, ?, ?, ?, ?, ?)'''
-            c.execute(insert_query, (employee_id, company_name, duration, position, description, username))
+                                job_title, job_description, entered_by, doc_file_path)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)'''
+            c.execute(insert_query,
+                      (employee_id, company_name, duration, position, description, username, resume_file_path))
             conn.commit()
-            if conn.total_changes > 0:
+            if c.rowcount > 0:
                 flash('Experience added successfully', 'success')
                 return redirect(url_for('experiences'))
         except Exception as e:
@@ -939,9 +977,10 @@ def edit_designation(id):
             designation = request.form['designation']
             description = request.form['description']
             try:
-                update_query = "UPDATE designations SET Designation_Name=?, Description=?, updated_by=? WHERE id=?"
+                update_query = "UPDATE designations SET Post_Name=?, Description=?, updated_by=? WHERE id=?"
                 c.execute(update_query, (designation, description, username, id))
-                if conn.commit():
+                conn.commit()
+                if conn.total_changes > 0:
                     flash('Designation updated successfully', 'success')
                     return redirect(url_for('designation'))
             except Exception as e:
@@ -1256,7 +1295,7 @@ def display_image(filename):
     return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
 
-@app.route('/file/<path:filename>')
+@app.route('/file/<filename>')
 def display_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
