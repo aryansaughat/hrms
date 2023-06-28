@@ -1,0 +1,36 @@
+{% extends 'verticalnav.html' %}
+
+{% block title %}
+    HRMS - Leaves History
+{% endblock %}
+
+{% block maincontainer %}
+    <div class="container">
+        <h2>Leave History</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>S.N.</th>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave in leaves %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ leave['Type'] }}</td>
+                        <td>{{ leave['Start_Date'] }}</td>
+                        <td>{{ leave['End_Date'] }}</td>
+                        <td>{{ leave['Reason'] }}</td>
+                        <td>{{ leave['Status'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+

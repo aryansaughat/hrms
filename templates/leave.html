@@ -1,0 +1,59 @@
+{%  extends 'verticalnav.html' %}
+{% block title %}
+    HRMS- Leave
+{% endblock %}
+{% block maincontainer %}
+    <div class="container mt-4">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <script>window.alert("{{ message }}");</script>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <h2>Leave Requests</h2>
+        <div class="search">
+             <input type="text" name="search"  id="searchInput" onkeyup="filterContent()" placeholder="Search..">
+        </div>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">S.N.</th>
+              <th scope="col">Employee ID</th>
+            <th scope="col">Employee Name</th>
+            <th scope="col">From Date</th>
+            <th scope="col">To Date</th>
+            <th scope="col">Type</th>
+            <th scope="col">Reason</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="contentContainer">
+          {% for leave in leaves %}
+            <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>{{ leave['Employee_ID'] }}</td>
+              <td>{{ leave['Name'] }}</td>
+              <td>{{ leave['Start_Date'] }}</td>
+              <td>{{ leave['End_Date'] }}</td>
+              <td>{{ leave['Type'] }}</td>
+              <td>{{ leave['Reason'] }}</td>
+              <td>{{ leave['Status'] }}</td>
+              <td>
+                {% if leave['Status'] == 'pending' %}
+                  <form method="POST" action="{{ url_for('approve_leave', id=leave['ID']) }}">
+                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                  </form>
+                    <form method="POST" action="{{ url_for('reject_leave', id=leave['ID']) }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                    </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}
+

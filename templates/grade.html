@@ -1,0 +1,68 @@
+{% extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Grade
+{% endblock %}
+{% block maincontainer %}
+  <div class="container mt-4">
+      <h2>Add Grade</h2><br>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                   <script>window.alert("{{ message }}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+      <div class="row">
+          <form action="{{ url_for('grade') }}" method="POST" id="grade_form">
+              <div class="col col-md-4">
+                  <label>Grade:</label>
+                <input type="text" id="grade" name="grade" class="form-control" required />
+              </div>
+              <div class="col col-md-4">
+                <label>Description:</label>
+                <input type="text" id="description" name="description" class="form-control" required /><br>
+              </div>
+              <div class="col col-md-4">
+                <input class="btn btn-primary" type="submit" value="Add Grade" id="submit_btn">
+              </div>
+          </form>
+      </div>
+        <br>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"> S.N. </th>
+            <th scope="col"> Grade</th>
+            <th scope="col"> Description</th>
+            <th scope="col"> Total Employees</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in grades %}
+            <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>{{ grade['Grade'] }}</td>
+              <td>{{ grade['Description'] }}</td>
+              <td>{{ grade['Id'] }}</td>
+              <td>
+                <a onclick="editGrade('{{ grade['Id'] }}', '{{ grade['Grade'] }}', '{{ grade['Description'] }}')" class="btn btn-sm btn-primary mr-1">Edit</a>
+                <a href="{{ url_for('delete_grade', id=grade['Id']) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this Grade?')">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+         </tbody>
+      </table>
+
+    </div>
+{% endblock %}
+{% block script %}
+    function editGrade(id, grade,description) {
+        document.getElementById('grade').value = grade;
+        document.getElementById('description').value = description;
+        let form = document.getElementById('grade_form');
+        form.action = "{{ url_for('edit_grade', id='__id__') }}".replace('__id__', id);
+        let submitBtn = document.getElementById('submit_btn');
+        submitBtn.value = "Submit Change";
+    }
+{% endblock %}

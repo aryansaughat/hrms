@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="../static/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<body id="body-pd">
+    <header class="header" id="header">
+        <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
+        <button type="button" aria-haspopup="true" aria-expanded="false" class="px-0 btn btn-link">
+            <div class="header_img" >
+                <a href="profile"> <img  src="../static/images/icons/usericon.png" alt="usericon" >
+                <span>{{ session['user_id'] }}</span></a>
+            </div>
+        </button>
+
+    </header>
+
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div>
+                <a href="dashboard" class="nav_logo"><i class='bx bx-layer nav_logo-icon'></i><span class="nav_logo-name">HRMS</span> </a>
+                <div class="nav_list">
+                    <a href="dashboard" class="nav_link"> <i class='bx bx-grid-alt nav_icon'></i> <span class="nav_name">Dashboard</span> </a>
+                    <div class="submenu">
+                        <a href="#" class="nav_link"><i class='bx bx-user nav_icon'></i>
+                            <button class="nav_name submenu-button">User Management<i class="bx bx-chevron-down arrow-icon"></i></button>
+                        </a>
+                        <div class="submenu-content">
+                            <a class="nav_link bx bx-user nav_icon" href="users"> Create User</a>
+                            <a class="nav_link bx bx-user nav_icon" href="role"> Roles</a>
+                            <a class="nav_link bx bx-user nav_icon" href="modules"> Modules</a>
+                            <a class="nav_link bx bx-user nav_icon" href="reset_password"> Reset Password</a>
+                        </div>
+                    </div>
+                    <div class="submenu">
+                        <a href="#" class="nav_link"> <i class='bx bx-message-square-detail nav_icon'></i>
+                            <button class="nav_name submenu-button">Employee Master<i class="bx bx-chevron-down arrow-icon"></i></button>
+                        </a>
+                        <div class="submenu-content">
+                            <a class="nav_link bx bx-user nav_icon" href="employee_records"> Employee Details </a>
+                            <a class="nav_link bx bx-user nav_icon" href="add_employee"> Add Employee</a>
+                            <a class="nav_link bx bx-user nav_icon" href="qualifications"> Add Qualification</a>
+                            <a class="nav_link bx bx-user nav_icon" href="experiences"> Add Experience</a>
+                            <a class="nav_link bx bx-user nav_icon" href="department"> Department</a>
+                            <a class="nav_link bx bx-user nav_icon" href="designation"> Designations</a>
+                        </div>
+                    </div>
+                    <div class="submenu">
+                        <a href="#" class="nav_link"><i class='bx bx-message-square-detail nav_icon'></i>
+                            <button class="nav_name submenu-button">Leave Management<i class="bx bx-chevron-down arrow-icon"></i></button>
+                        </a>
+                        <div class="submenu-content">
+                            <a class="nav_link bx bx-message-square-detail nav_icon" href="add_leave"> Apply Leaves</a>
+                            <a class="nav_link bx bx-message-square-detail nav_icon" href="leave_management"> Leave Approval</a>
+                            <a class="nav_link bx bx-message-square-detail nav_icon" href="leave_history"> Leave History</a>
+                        </div>
+                    </div>
+                    <div class="submenu">
+                        <a href="#" class="nav_link"><i class='bx bx-bookmark nav_icon'></i>
+                            <button class="nav_name submenu-button">Attendance<i class="bx bx-chevron-down arrow-icon"></i></button>
+                        </a>
+                        <div class="submenu-content">
+                            <a class="nav_link bx bx-bookmark nav_icon" href="attendance"> Attendance</a>
+                            <a class="nav_link bx bx-bookmark nav_icon" href="attendance_entry"> Attendance Entry</a>
+                            <a class="nav_link bx bx-bookmark nav_icon" href="attendance_history"> Attendance History</a>
+                        </div>
+                    </div>
+                    <div class="submenu">
+                        <a href="#" class="nav_link"><i class='bx bx-folder nav_icon'></i>
+                            <button class="nav_name submenu-button">Payroll Master<i class="bx bx-chevron-down arrow-icon"></i></button>
+                        </a>
+                        <div class="submenu-content">
+                            <a class="nav_link bx bx-folder nav_icon" href="payroll"> Generate Payroll</a>
+                            <a class="nav_link bx bx-folder nav_icon" href="set_salary"> Set Salary</a>
+                            <a class="nav_link bx bx-folder nav_icon" href="grade"> Set grade</a>
+                            <a class="nav_link bx bx-folder nav_icon" href="tax"> Set  Taxes</a>
+                        </div>
+                    </div>
+                    <a href="performance_prediction" class="nav_link"> <i class='bx bx-bar-chart-alt-2 nav_icon'></i> <span class="nav_name">Performance Master</span> </a>
+                </div>
+            </div> <a href="logout" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">SignOut</span> </a>
+        </nav>
+    </div>
+    {% block maincontainer %}
+
+    {% endblock %}
+
+    {% block modal %}
+    {% endblock %}
+</body>
+</html>
+<script>
+    {% block script %}
+    {% endblock %}
+document.addEventListener("DOMContentLoaded", function(event) {
+    const showNavbar = (toggleId, navId, bodyId, headerId) =>{
+        const toggle = document.getElementById(toggleId),
+        nav = document.getElementById(navId),
+        bodypd = document.getElementById(bodyId),
+        headerpd = document.getElementById(headerId)
+        if(toggle && nav && bodypd && headerpd){
+            toggle.addEventListener('click', ()=>{
+                nav.classList.toggle('show')
+                toggle.classList.toggle('bx-x')
+                bodypd.classList.toggle('body-pd')
+                headerpd.classList.toggle('body-pd')
+            })
+        }
+    }
+    showNavbar('header-toggle','nav-bar','body-pd','header')
+    const linkColor = document.querySelectorAll('.nav_link')
+    function colorLink(){
+        if(linkColor){
+            linkColor.forEach(l=> l.classList.remove('active'))
+            this.classList.add('active')
+        }
+    }
+    linkColor.forEach(l=> l.addEventListener('click', colorLink))
+
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var submenuButtons = document.querySelectorAll('.submenu-button');
+    for (var i = 0; i < submenuButtons.length; i++) {
+        submenuButtons[i].addEventListener('click', function() {
+            var submenu = this.parentNode.parentNode;
+            submenu.classList.toggle('active');
+
+            var submenuContent = this.nextElementSibling;
+            if (submenuContent.style.maxHeight) {
+                submenuContent.style.maxHeight = null;
+            } else {
+                submenuContent.style.maxHeight = submenuContent.scrollHeight + 'px';
+            }
+        });
+    }
+});
+function printPage() {
+            window.print();
+        }
+        function filterContent() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("contentContainer");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            var found = false;
+            for (j = 0; j < tr[i].cells.length; j++) {
+                td = tr[i].cells[j];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            tr[i].style.display = found ? "" : "none";
+        }
+    }
+    let inactivityTimer;
+    function startInactivityTimer() {
+        inactivityTimer = setTimeout(logout, 20 * 60 * 1000);
+    }
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimer);
+        startInactivityTimer();
+    }
+    function logout() {
+        window.location.href = "/logout";
+    }
+    startInactivityTimer();
+    document.addEventListener("click", resetInactivityTimer);
+    document.addEventListener("keypress", resetInactivityTimer);
+    document.addEventListener("mousedown", resetInactivityTimer);
+
+</script>

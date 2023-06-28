@@ -1,0 +1,38 @@
+{% extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Department
+{% endblock %}
+{% block maincontainer %}
+    <div class="container mt-4">
+        <h3>Attendance Records</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">S.N.</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Latitude</th>
+                    <th scope="col">Longitude</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if attendance_records %}
+                    {% for record in attendance_records %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ record['Attendance_Date'] }}</td>
+                            <td>{{ record['Attendance_Time'] | format_time }}</td>
+                            <td>{{ record['Latitude'] }}</td>
+                            <td>{{ record['Longitude'] }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                    <td colspan="4">No Data found on Attendance table</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Add Employee
+{% endblock %}
+
+{% block maincontainer %}
+<div class="container md">
+    <div class="container-fluid" style="margin-bottom: 2em;">
+    <h1>Add Employee</h1>
+    <form method="POST" action="{{ url_for('add_employee') }}" enctype="multipart/form-data" style="width: 60%; position: absolute; left: 30em; ">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="ID"> Employee ID number:</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+
+                <div class="form-group">
+                    <label for="father_name">Father's Name:</label>
+                    <input type="text" class="form-control" id="father_name" name="father_name" required>
+                </div>
+                 <div class="form-group">
+                    <label for="grandfather_name">Grandfather's Name:</label>
+                    <input type="text" class="form-control" id="grandfather_name" name="grandfather_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth:</label>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="designation">Designation:</label>
+                    <select class="form-control" id="designation" name="designation" required>
+                        <option value="">Select Designation</option>
+                            {% for row in designation %}
+                                <option value="{{ row['Post_Name'] }}">{{ row['Post_Name'] }}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="joining_date">Joining Date:</label>
+                    <input type="date" class="form-control" id="joining_date" name="joining_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="terminated">Terminated:</label>
+                    <input type="checkbox" name="terminated">
+                </div>
+                <div class="form-group">
+                    <label for="termination_reason">Termination Reason:</label>
+                    <input type="text" name="termination_reason" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="bank_account_number">Bank Account Number:</label>
+                    <input type="text" name="bank_account_number" class="form-control">
+                </div>
+                 <div class="form-group">
+                    <label for="marital_status">Marital Status:</label>
+                    <input type="text" name="marital_status" class="form-control">
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="profile_image" id='profile_image' onchange="validateimage(this)"required>
+                    <label class="custom-file-label" for="profile_image">Profile photo: </label>
+                    <a class="required" style="font-size: 1em;">Images should be on Jpeg/PNG format and less than 500 KB</a>
+                    <br><small id="profile_image_error" class="text-danger"></small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="name"> Full Name:</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                   <label for="mother_name">Mother's Name:</label>
+                    <input type="text" class="form-control" id="mother_name" name="mother_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select class="form-control" id="gender" name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="department">Department:</label>
+                    <select class="form-control" id="department" name="department" required>
+                        <option value="">Select Department</option>
+                            {% for row in depart %}
+                                <option value="{{ row['Depart_Name'] }}">{{ row['Depart_Name'] }}</option>
+                            {% endfor %}
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="citizenship_number">Citizenship Number:</label>
+                    <input type="text" class="form-control" id="citizenship_number" name="citizenship_number" required>
+                </div>
+                <div class="form-group">
+                    <label for="active">Active:</label>
+                    <input type="checkbox" name="active">
+                </div>
+                <div class="form-group">
+                    <label for="termination_date">Termination Date:</label>
+                    <input type="date" name="termination_date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="pan_number">PAN Number:</label>
+                    <input type="text" name="pan_number" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="spouse_name">Spouse Name:</label>
+                    <input type="text" name="spouse_name" class="form-control">
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Employee</button>
+        <a href="{{ url_for('employee_records')}}" class="btn btn btn-primary ">Cancel</a>
+    </form>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+    function validateimage(profileinput) {
+        var profileImage = profileinput.files[0];
+        var profileImageError = document.getElementById('profile_image_error');
+        if (!profileImage) {
+            profileImageError.textContent = 'Please select a profile image.';
+            return false;
+        }
+        var allowedTypes = ['image/jpeg', 'image/png'];
+        var maxSizeInBytes = 500 * 1024;
+        if (!allowedTypes.includes(profileImage.type)) {
+            profileImageError.textContent = 'Only JPEG and PNG images are allowed.';
+            return false;
+        }
+        if (profileImage.size > maxSizeInBytes) {
+            profileImageError.textContent = 'Image size exceeds the maximum limit of 500KB.';
+            return false;
+        }
+        profileImageError.textContent = '';
+        return true;
+    }
+    $(".custom-file-input").on("change", function() {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'verticalnav.html' %}
+
+{% block title %}
+    HRMS - Designation
+{% endblock %}
+
+{% block maincontainer %}
+    <div class="container mt-4">
+        <h2>Designation</h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>window.alert("{{ message }}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="wrapper" style="margin-top: 20px; margin-bottom: 20px">
+            <h4>Add Designation</h4>
+            <div class="content">
+                <div class="container">
+                    <form action="{{ url_for('add_designation') }}" method="POST" id="addForm">
+                        <label>Designation:</label>
+                        <input type="text" id="designation" name="designation" class="form-control"  required>
+                        <label>Description:</label>
+                        <input type="text" id="description" name="description" class="form-control"  required>
+                        <br>
+                        <input type="submit" value="Add Designation" id="submit_btn">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col"> S.N. </th>
+                    <th scope="col"> Designation</th>
+                    <th scope="col"> Description</th>
+                    <th scope="col"> Total Employees</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for designation in designations %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ designation['Post_Name'] }}</td>
+                    <td>{{ designation['Description'] }}</td>
+                    <td>{{ designation['empcount'] }}</td>
+                    <td>
+                        <a onclick="editdesignation('{{ designation['Id']}}', '{{ designation['Post_Name'] }}', '{{ designation['Description'] }}')" class="btn btn-sm btn-primary mr-1">Edit</a>
+                        <a href="{{ url_for('delete_designation', id=designation['Id']) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block script %}
+    function editdesignation(id, designation,description) {
+        document.getElementById('designation').value = designation;
+        document.getElementById('description').value = description;
+        let form = document.getElementById('addForm');
+        form.action = "{{ url_for('edit_designation', id='__id__') }}".replace('__id__', id);
+        let submitBtn = document.getElementById('submit_btn');
+        submitBtn.value = "Submit Change";
+    }
+{% endblock %}
+

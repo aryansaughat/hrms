@@ -1,0 +1,148 @@
+{% extends 'verticalnav.html' %}
+
+{% block title %}
+    HRMS - Users
+{% endblock %}
+{% block maincontainer %}
+
+<div class="container mt-5">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                        <script>alert('{{ message }}')</script>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <h3>Tax Slab</h3>
+    <form method="POST" action="{{ url_for('tax') }}" id="addTaxForm" onsubmit="validateForm()">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="parameter">Maritial Status<span class="required">*</span>:</label>
+                    <select class="form-select" id="parameter" name="parameter" required>
+                        <option value="">Select Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Torange">To Range<span class="required">*</span>:</label>
+                    <input type="text" class="form-control" id="torange" name="torange"  required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fromrange">From Range<span class="required">*</span>:</label>
+                    <input type="text" class="form-control" id="fromrange" name="fromrange"  required>
+                </div>
+                <div class="form-group">
+                    <label for="percent">Tax Percentage(%)<span class="required">*</span>:</label>
+                    <input type="text" class="form-control" id="percent" name="percent"  required>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <br><input type="submit" class="btn btn-primary" id="submit_btn" value="Submit"></input>
+        </div>
+    </form>
+        <div class="col md" style="margin-top:15px">
+            <h3>Tax Slab</h3>
+            <div class="search">
+                <input type="text" name="search"  id="searchInput" onkeyup="filterContent()" placeholder="Search..">
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Maritial Status</th>
+                        <th>From Range</th>
+                        <th>To Range</th>
+                        <th>Percentage</th>
+                        <th>Fiscal Year</th>
+                    </tr>
+                </thead>
+                <tbody id="contentContainer">
+                {% if tax %}
+                    {% for row in tax %}
+                    <tr>
+                        <th>{{ loop.index }}</th>
+                        <td>{{ row['Mstatus'] }}</td>
+                        <td>{{ row['From_Range'] }}</td>
+                        <td>{{ row['To_Range'] }}</td>
+                        <td>{{ row['Tax_Percent'] }}%</td>
+                        <td>{{ row['Fiscalyear'] }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="7"><p>No user data available.</p></td></tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+</div>
+
+{% endblock %}
+{% block script %}
+
+    function validateForm() {
+        var percentage = document.getElementById("percent").value;
+        var from = parseInt(document.getElementById("fromrange").value);
+        var to = parseInt(document.getElementById("torange").value);
+        if (from >= to ) {
+            alert("From range cannot be equal or greater than  to.");
+            event.preventDefault();
+        }
+        if (percentage > 100 ) {
+            alert("Percentage can't be greater than 100.");
+            event.preventDefault();
+
+        }
+        if (percentage < 0 ) {
+            alert("Percentage can't be negative value.");
+            event.preventDefault();
+        }
+        return true;
+    }
+   function editUser(userId) {
+    $.ajax({
+        url: '/get_user_data',
+        method: 'POST',
+        data: { id: userId },
+        success: function(response) {
+            $('#id').val(response.empid);
+            $('#name').val(response.name);
+            $('#username').val(response.username);
+            $('#email').val(response.email);
+            $('#phone').val(response.phone);
+            $('#role').val(response.role);
+            $('#designation').val(response.designation);
+            $('#department').val(response.department);
+            let input = document.getElementById('id');
+            input.readOnly = true;
+            $('#password').hide();
+            $('#cpassword').hide();
+            let passwordField = document.getElementById("password");
+                passwordField.removeAttribute("required");
+                passwordField.disabled = true;
+            let cpasswordField = document.getElementById("cpassword");
+                cpasswordField.removeAttribute("required");
+                cpasswordField.disabled = true;
+            $('#password_label').hide();
+            $('#cpassword_label').hide();
+            let form = document.getElementById('createUserForm');
+            let id = parseInt(response.id);
+            form.action = "/edit_user/" + response.id;
+            form.onsubmit = null;
+            let submitBtn = document.getElementById('submit_btn');
+            submitBtn.value = "Submit Change";
+        },
+        error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+{% endblock %}
+

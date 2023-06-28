@@ -1,0 +1,77 @@
+{% extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Modules
+{% endblock %}
+{% block maincontainer %}
+    <h3>Assign Modules</h3>
+     <div class="container mt-4">
+        <form action="{{ url_for('add_modules') }}" method="POST">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>User Role</label>
+                        <select id="user_type_id" name="role" class="select form-control select2-hidden-accessible" required="required" tabindex="-1" aria-hidden="true">
+                            <option selected disabled>Select Role</option>
+                            {% for role in roles %}
+                                <option value={{ role['Role_Name'] }}>{{ role['Role_Name'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>User Modules</label>
+                        <select id="user_roles" name="modules" placeholder="Select User Roles" class="form-control" required="required" multiple="multiple" style="height: 160px;">
+                            {% for module in modules %}
+                                <option value={{ module['Description'] }}>{{ module['Module_Name'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4" id="addId">
+                    <div class="form-group" style="padding-top: 27px;">
+                        <label>&nbsp;</label>
+                        <button type="submit"  class="btn btn-primary" data-style="expand-right" data-spinner-size="20">
+                            <span class="ladda-label">Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <fieldset class="content-group">
+			<legend class="text-bold">User Module Details</legend>
+			<div class="col-md-12">
+				<div class="panel-body" style="margin-top: -38px;">
+					<div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table table-striped" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+						<thead>
+							<tr class="bg-blue" role="row">
+                                <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="User Type: activate to sort column descending">User Type</th>
+                                <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 100px;" aria-label="User Modules">User Modules</th>
+                                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Edit/Delete: activate to sort column ascending">Action</th></tr>
+						</thead>
+						<tbody>
+                        {% if assigned %}
+                            {% for rows in assigned %}
+                                <tr role="row" class="even">
+									<td class="sorting_1">{{ rows['Role'] }}</td>
+									<td>{{ rows['Description'] }}</td>
+									<td><a href="#" class="btn btn-sm btn-primary m-1" onclick="editUserRoles()">Edit</a></td>
+								</tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                            <th colspan="3">No data found for modules assigned</th>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+
+					</table>
+                    </div>
+				</div>
+			</div>
+		</fieldset>
+     </div>
+{% endblock %}

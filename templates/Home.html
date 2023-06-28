@@ -1,0 +1,79 @@
+{% extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Dashboard
+{% endblock %}
+{% block maincontainer %}
+    <div class="height-100 bg-light">
+        <h4>Dashboard</h4>
+        {% if not ae %}
+            <div class="alert alert-warning" role="alert" style="width: auto; display: inline-flex">
+                Attendance has not been recorded for today.Please <a href="attendance"> click here</a> for attendance.
+            </div>
+        {% endif %}
+        <div class="container bootstrap snippets bootdey"><br>
+            <div class="row">
+                <div class="col-lg-2 col-lg-3">
+                    <div class="card" style="width: 18rem; margin:15px;">
+                        <div class="card-body">
+                            <h3 class="card-title">Total Employees</h3>
+                            <i class="fa fa-users fa-fw fa-2x"></i>
+                            {% if emp %}
+                                <h4 class="card-subtitle mb-2 text-muted" style="display: inline-flex">{{ emp[0] }}</h4>
+                                <h6 class="card-subtitle mb-2 text-muted" style="display: inline-flex">Persons</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-lg-3">
+                    <div class="card" style="width: 18rem; margin:15px;">
+                        <div class="card-body">
+                            <h3 class="card-title">Present Employees</h3>
+                            <i class="fa fa-users fa-fw fa-2x"></i>
+                            {% if atndce %}
+                                <h4 class="card-subtitle mb-2 text-muted" style="display: inline-flex">{{ atndce[0] }}</h4>
+                                <h6 class="card-subtitle mb-2 text-muted" style="display: inline-flex">Persons</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-lg-3">
+                    <div class="card" style="width: 18rem; margin:15px;">
+                        <div class="card-body">
+                            <h3 class="card-title">Leave Application</h3>
+                            <i class="fa fa-envelope-open-o fa-fw fa-2x"></i>
+                            {% if leave %}
+                                <h4 class="card-subtitle mb-2 text-muted" style="display: inline-flex">{{ leave[0] }}</h4>
+                                <h6 class="card-subtitle mb-2 text-muted" style="display: inline-flex">Persons</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2 col-lg-3">
+                    <div class="card" style="width: 18rem; margin:15px;">
+                        <div class="card-body">
+                            <h3 class="card-title">Total Department</h3>
+                            <i class="fa fa-tasks fa-fw fa-2x"></i>
+                            {% if depart %}
+                                <h4 class="card-subtitle mb-2 text-muted" style="display: inline-flex">{{ depart[0] }}</h4>
+                                <h6 class="card-subtitle mb-2 text-muted" style="display: inline-flex">Departments</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-lg-3">
+                    <div class="card" style="width: 18rem; margin:15px;">
+                        <div class="card-body">
+                            <h3 class="card-title">Total Designation</h3>
+                            <i class="fa fa-id-card-o fa-fw fa-2x" aria-hidden="true"></i>
+                            {% if desgn %}
+                                <h4 class="card-subtitle mb-2 text-muted" style="display: inline-flex">{{ desgn[0] }}</h4>
+                                <h6 class="card-subtitle mb-2 text-muted" style="display: inline-flex">Designation</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+{% endblock %}

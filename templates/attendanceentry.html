@@ -1,0 +1,70 @@
+{% extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Attendacne
+{% endblock %}
+{% block maincontainer %}
+    <div class="container  mt-8">
+        <h3>Attendance Entry</h3>
+            {% if message %}
+                <div class="alert alert-success">
+                        {% for messages in message %}
+                            <script>alert("{{ message }}");</script>
+                        {% endfor %}
+                </div>
+            {% endif %}
+        <form action="{{ url_for('attendance_entry') }}" method="POST" id="attendanceForm" style="width: 30em">
+            <div class="form-group">
+                <label for="employee_id">Employee ID:</label>
+                <input type="text" name="empid" id="empid" placeholder="Search by employee ID" onchange="fetchEmployeeData()">
+            </div>
+            <div class="form-group">
+                <label for="employee">Employee:</label>
+                <select class="form-control" id="employee" name="employee" required>
+                    <option value="" selected disabled>Select Employee</option>
+                    {% for employee in employees %}
+                        <option value="{{ employee[0] }}">{{ employee[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+        <br>
+            <button type="submit" class="btn btn-primary">Mark Attendance</button>
+        </form>
+    </div>
+
+{% endblock %}
+{% block script %}
+    function fetchEmployeeData() {
+        var employeeID = document.getElementById('empid').value;
+
+        $.ajax({
+            url: '/fetch_employee_name',
+            method: 'GET',
+            data: { id: employeeID },
+            success: function(response) {
+                alert('Employees ID found. You can enter attendance');
+                let select = document.getElementById('employee');
+                let responseName = response.name;
+                select.disabled = true;
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].textContent === responseName) {
+                        select.options[i].selected = true;
+                        select.value = employeeID
+                        break;
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = JSON.parse(xhr.responseText).error;
+                alert(errorMessage);
+                setTimeout(function() {
+                    $('#attendanceForm').find('input, select, textarea').val('');
+                    location.reload();
+                }, 300);
+            }
+        });
+    }
+{% endblock %}

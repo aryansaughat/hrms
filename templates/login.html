@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>HRMS</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/vendor/select2/select2.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/util.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/main.css">
+
+</head>
+<body style="background-color: #666666;">
+
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <script>alert('{{ message }}')</script>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+				<form class="login100-form validate-form" method="post" action="{{ url_for('login') }}">
+					<div class="px-5 ms-xl-4">
+						<i class="fa fa-users fa-2x me-3 t-5 mt-xl-4" style="color: #709085;"></i>
+						<span class="h1 fw-bold mb-0">HRMS</span><br>
+					  </div><br>
+					  <br><h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Log in</h3>
+					<div class="wrap-input100 validate-input" data-validate = "Valid username is required ">
+						<input class="input100" type="text" name="username" {% if username: %} value=" {{ username }}" {% endif %} >
+						<span class="focus-input100"></span>
+						<span class="label-input100">username</span>
+					</div>
+
+
+					<div class="wrap-input100 validate-input" data-validate="Password is required">
+						<input class="input100" type="password" id="password" name="password">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Password</span>
+                         <i class="toogle fa fa-eye" id="togglePassword" ></i>
+					</div>
+
+					<div class="flex-sb-m w-full p-t-3 p-b-32">
+						<div class="contact100-form-checkbox">
+							<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+							<label class="label-checkbox100" for="ckb1">
+								Remember me
+							</label>
+						</div>
+
+						<div>
+                            <a class="txt1" href="#divOne" >
+								Forgot Password?
+							</a>
+						</div>
+					</div>
+
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn">
+							Login
+						</button>
+					</div>
+
+					<div class="text-center p-t-46 p-b-20">
+						<span class="txt2">
+							 <p>Don't have an account? <a href="#" class="link-info">Contact Administration</a></p>
+						</span>
+					</div>
+				</form>
+
+				<div class="login100-more" style="background-image: url('../static/images/bg1.jpg');">
+					<div class="developed">
+					<p>Developed by:</p>
+                    <span>Aakash Thapa</span><br>
+                    <span>Kapil Karki</span><br>
+                    <span>Prarthana Sapkota</span><br>
+                    <span>Suraj Shrestha</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+    <div class="overlay" id="divOne">
+		<div class="wrapper">
+			<h4>Forget Password</h4><a class="close" href="#">&times;</a>
+			<div class="content">
+				<div class="container">
+					<form action="{{ url_for('forgot_password') }}" method="POST">
+						<label>Enter Username:</label>
+						<input type="text" id="username" name="username" class="form-control" required />
+						<label>Enter Email:</label>
+						<input type="email" id="email" name="email" class="form-control" required /><br>
+						<input class="btn-primary" type="submit" value="Submit">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="../static/vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script src="../static/vendor/animsition/js/animsition.min.js"></script>
+	<script src="../static/vendor/bootstrap/js/popper.js"></script>
+	<script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../static/vendor/select2/select2.min.js"></script>
+	<script src="../static/js/main.js"></script>
+</body>
+</html>
+<script>
+  const togglePassword = document.querySelector('#togglePassword');
+  const password = document.querySelector('#password');
+
+  togglePassword.addEventListener('click', function (e) {
+      if( password.type === 'password') {
+                password.type = 'text';
+                togglePassword.classList.add('fa-eye-slash');
+            }else {
+                password.type = 'password';
+                togglePassword.classList.remove('fa-eye-slash');
+            }
+  });
+</script>

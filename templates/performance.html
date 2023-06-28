@@ -1,0 +1,60 @@
+{%  extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Performance
+{% endblock %}
+{% block maincontainer %}
+    <div class="container mt-4">
+            <h1>Performance Management</h1>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Age</th>
+                        <th>Experience</th>
+                        <th>Comments</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% if performances %}
+                    {% for performance in performances %}
+                    <tr>
+                        <td>{{ performance[1] }}</td>
+                        <td>{{ performance[2] }}</td>
+                        <td>{{ performance[3] }}</td>
+                        <td>{{ performance[4] }}</td>
+                        <td><a href="{{ url_for('edit_performance', id=performance[0]) }}">Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="4"><p>No performance data available.</p></td></tr>
+                {% endif %}
+                </tbody>
+            </table>
+        <hr>
+        <h2>Add Performance</h2>
+  <form method="post" action="{{ url_for('add_performance') }}">
+      <table class="form-group">
+          <tr>
+              <th> <label for="employee_id">Employee ID:</label></th>
+              <td><input type="text" name="emp_id" id="employee_id" required></td>
+          </tr>
+          <tr>
+              <th> <label for="age">Age :</label></th>
+              <td><input type="text" name="age" id="age"  required></td>
+          </tr>
+          <tr>
+              <th> <label for="Experience">Experience :</label></th>
+              <td><input type="text" name="experience" id="experience" required></td>
+          </tr>
+          <tr>
+              <th> <label for="comments">Comments:</label></th>
+              <td><textarea name="comments" id="comments"></textarea></td>
+          </tr>
+          <tr>
+              <td colspan="2"><input type="submit" value="Submit"></td>
+          </tr>
+      </table>
+  </form>
+    </div>
+{% endblock %}

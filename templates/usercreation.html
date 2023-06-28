@@ -1,0 +1,226 @@
+{% extends 'verticalnav.html' %}
+
+{% block title %}
+    HRMS - Users
+{% endblock %}
+{% block maincontainer %}
+
+<div class="container mt-5">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                        <script>alert('{{ message }}')</script>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <h3>Create a new user</h3>
+    <form method="POST" action="{{ url_for('create_user') }}" id="createUserForm" onsubmit="return validateForm()">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="ID">Employee ID number<span class="required">*</span>:</label>
+                    <input type="text" class="form-control" id="id" name="id" onchange="fetchEmployeeData()" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name<span class="required">*</span>:</label>
+                    <input type="text" class="form-control" id="name" name="name" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="Username">Username<span class="required">*</span>:</label>
+                    <input type="text" class="form-control" id="username" name="username" minlength="5" required >
+                </div>
+                <div class="form-group">
+                    <label for="password" id="password_label">Password<span class="required">*</span>:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="cpassword" id="cpassword_label">Confirm Password<span class="required">*</span>:</label>
+                    <input type="password" class="form-control" id="cpassword" name="cpassword" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="email">Email<span class="required">*</span>:</label>
+                    <input type="email" class="form-control" id="email" name="email" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone<span class="required">*</span>:</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role<span class="required">*</span>:</label>
+                    <select class="form-select" id="role" name="role" required>
+                        <option value="">Select Role</option>
+                        {% for row in roles %}
+                            <option value="{{ row['Role_Name'] }}">{{ row['Role_Name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="designation">Designation<span class="required">*</span>:</label>
+                    <select class="form-select" id="designation" name="designation" required>
+                        <option value="">Select Designation</option>
+                        {% for row in designation %}
+                            <option value="{{ row['Post_Name'] }}">{{ row['Post_Name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="department">Department<span class="required">*</span>:</label>
+                    <select class="form-select" id="department" name="department" required>
+                        <option value="">Select Department</option>
+                        {% for row in depart %}
+                            <option value="{{ row['Depart_Name'] }}">{{ row['Depart_Name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <br><input type="submit" class="btn btn-primary" id="submit_btn" value="Create user"></input>
+        </div>
+    </form>
+        <div class="col md" style="margin-top:15px">
+            <h3>All Users</h3>
+            <div class="search">
+                <input type="text" name="search"  id="searchInput" onkeyup="filterContent()" placeholder="Search..">
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Name</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Designation</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Edit</th>
+                        <th>Action</th>
+
+                    </tr>
+                </thead>
+                <tbody id="contentContainer">
+                {% if users %}
+                    {% for user in users %}
+                    <tr>
+                        <th>{{ loop.index }}</th>
+                        <td>{{ user['Name'] }}</td>
+                        <td>{{ user['Username'] }}</td>
+                        <td>{{ user['Email'] }}</td>
+                        <td>{{ user['Phone'] }}</td>
+                        <td>{{ user['Designation'] }}</td>
+                        <td>{{ user['Department'] }}</td>
+                        <td>{{ user['Role'] }}</td>
+                        {% if user['Status']=='Active' %}
+                            <td>Active</td>
+                        {% else %}
+                            <td>Inactive</td>
+                        {% endif %}
+                        <td><a class="btn btn-sm btn-primary" onclick="editUser({{ user['Id'] }})">Edit</a> </td>
+                        {% if user['Status']=='Active' %}
+                            <td><a href="{{ url_for('changestatus', id=user['Id']) }}" class="btn btn-sm btn-danger">Deactivate</a> </td>
+                        {% else %}
+                            <td><a href="{{ url_for('changestatus', id=user['Id']) }}" class="btn btn-sm btn-success">Activate</a> </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="7"><p>No user data available.</p></td></tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+</div>
+
+{% endblock %}
+{% block script %}
+    function fetchEmployeeData() {
+        var employeeID = document.getElementById('id').value;
+
+        $.ajax({
+            url: '/fetch_employee_data',
+            method: 'GET',
+            data: { id: employeeID },
+            success: function(response) {
+                alert('Employees ID found. You can create user');
+                document.getElementById('name').value = response.name;
+                document.getElementById('phone').value = response.phone;
+                document.getElementById('email').value = response.email;
+                document.getElementById('department').value = response.department;
+                document.getElementById('designation').value = response.design;
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = JSON.parse(xhr.responseText).error;
+                alert(errorMessage);
+                setTimeout(function() {
+                    $('#createUserForm').find('input, select, textarea').val('');
+                    location.reload();
+                }, 300);
+            }
+        });
+    }
+    function validateForm() {
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var cpassword = document.getElementById("cpassword").value;
+        if (username.length < 5) {
+            alert("Username must be at least 5 characters long.");
+            return false;
+        }
+        if (password !== cpassword) {
+            alert("Passwords do not match.");
+            return false;
+        }
+        var passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            alert("Password must contain at least 8 characters, one uppercase letter, one digit, and one special character.");
+            return false;
+        }
+        return true;
+    }
+   function editUser(userId) {
+    $.ajax({
+        url: '/get_user_data',
+        method: 'POST',
+        data: { id: userId },
+        success: function(response) {
+            $('#id').val(response.empid);
+            $('#name').val(response.name);
+            $('#username').val(response.username);
+            $('#email').val(response.email);
+            $('#phone').val(response.phone);
+            $('#role').val(response.role);
+            $('#designation').val(response.designation);
+            $('#department').val(response.department);
+            let input = document.getElementById('id');
+            input.readOnly = true;
+            $('#password').hide();
+            $('#cpassword').hide();
+            let passwordField = document.getElementById("password");
+                passwordField.removeAttribute("required");
+                passwordField.disabled = true;
+            let cpasswordField = document.getElementById("cpassword");
+                cpasswordField.removeAttribute("required");
+                cpasswordField.disabled = true;
+            $('#password_label').hide();
+            $('#cpassword_label').hide();
+            let form = document.getElementById('createUserForm');
+            let id = parseInt(response.id);
+            form.action = "/edit_user/" + response.id;
+            form.onsubmit = null;
+            let submitBtn = document.getElementById('submit_btn');
+            submitBtn.value = "Submit Change";
+        },
+        error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+{% endblock %}
+

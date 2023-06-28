@@ -1,0 +1,79 @@
+{%  extends 'verticalnav.html' %}
+{% block title %}
+    HRMS - Leave
+{% endblock %}
+{% block maincontainer %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Apply For Leave</h3>
+                <form method="post" action="{{ url_for('add_leave') }}">
+                    <table class="form-group">
+                        <tr>
+                            <th> <label for="employee_id">Employee ID:</label></th>
+                            <td><input type="text" class="form-control" name="emp_id" id="employee_id" value="{{ users['Employee_ID'] }}" readonly style="margin-top: 15px"></td>
+                        </tr>
+                        <tr>
+                            <th><label for="fromdate">From Date:</label></th>
+                            <td><input type="date" class="form-control" id="fromdate" name="fromdate" required></td>
+                        </tr>
+                        <tr>
+                            <th><label for="todate">To Date:</label></th>
+                            <td><input type="date" class="form-control" id="todate" name="todate" required></td>
+                        </tr>
+                        <tr>
+                            <th> <label for="type">Type:</label></th>
+                            <td><input type="text" class="form-control" name="type" id="type" required></td>
+                        </tr>
+                        <tr>
+                            <th> <label for="reason">Reason:</label></th>
+                            <td><input type="text" class="form-control" name="reason" id="reason" required style="width: 250%"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><input type="text" class="form-control" name="status" id="status" hidden value="pending"></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2" style="align-content:center;"><input type="submit" value="Submit"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h4>Pending Leave request </h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">S.N</th>
+                            <th scope="col">Employee ID</th>
+                            <th scope="col">From Date</th>
+                            <th scope="col">To Date</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Reason</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                    {% if leaves %}
+                        {% for leave in leaves %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ leave['Employee_ID'] }}</td>
+                                <td>{{ leave['Start_Date'] }}</td>
+                                <td>{{ leave['End_Date'] }}</td>
+                                <td>{{ leave['Type'] }}</td>
+                                <td>{{ leave['Reason'] }}</td>
+                                <td><a href="#" class="btn-sm btn-primary">Edit</a>
+                                    <a href="#" class="btn-sm btn-danger">Cancel</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="6"><p>No pending leave for approval.</p></td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

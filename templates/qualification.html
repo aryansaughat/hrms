@@ -1,0 +1,119 @@
+{% extends 'verticalnav.html' %}
+
+{% block title %}
+    HRMS - Qualifications
+{% endblock %}
+
+{% block maincontainer %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                        <script>alert('{{ message }}')</script>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <div class="container mt-4">
+        <h2>Qualifications</h2>
+        <form method="POST" action="{{ url_for('add_qualifications') }}" id="qualification_form">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="employee_id">Employee ID</label>
+                        <input type="text" class="form-control" id="employee_id" name="employee_id" placeholder="Enter Employee ID" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="qualification_name">Qualification Name</label>
+                        <input type="text" class="form-control" id="qualification_name" name="qualification_name" placeholder="Enter Qualification Name" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="college_name">College/University Name</label>
+                        <input type="text" class="form-control" id="college_name" name="college_name" placeholder="Enter College/University Name" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="board">Board</label>
+                        <input type="text" class="form-control" id="board" name="board" placeholder="Enter Board" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="divisions">Divisions</label>
+                        <input type="text" class="form-control" id="divisions" name="divisions" placeholder="Enter Divisions" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="grade">Grade/Percentage:</label>
+                        <input type="text" class="form-control" id="grade" name="grade" placeholder="Enter Grade" required>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" class="btn btn-primary" id="submit_btn" value="Add Qualification">
+        </form>
+        <br>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col"> S.N. </th>
+                    <th scope="col"> Employee ID</th>
+                    <th scope="col"> Qualification Name</th>
+                    <th scope="col"> College/University name</th>
+                    <th scope="col"> Board</th>
+                    <th scope="col"> Divisions</th>
+                    <th scope="col"> Grade/Percentage</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if qualifications %}
+                    {% for qualification in qualifications %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ qualification['Employee_ID'] }}</td>
+                            <td>{{ qualification['Level'] }}</td>
+                            <td>{{ qualification['College_Name'] }}</td>
+                            <td>{{ qualification['Board'] }}</td>
+                            <td>{{ qualification['Division'] }}</td>
+                            <td>{{ qualification['Grade'] }}</td>
+                            <td>
+                                <a  class="btn btn-sm btn-primary mr-1" onclick="editQualification('{{ qualification['ID'] }}', '{{ qualification['Employee_ID'] }}', '{{ qualification['Level'] }}', '{{ qualification['College_Name'] }}', '{{ qualification['Board'] }}', '{{ qualification['Division'] }}', '{{ qualification['Grade'] }}')">Edit</a>
+                                <a href="{{ url_for('delete_qualification', id=qualification['ID' ]) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="9">No Data found for qualifications</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block script %}
+    function editQualification(id, employeeId, qualificationName, collegeName, board, divisions, grade) {
+        document.getElementById('employee_id').value = employeeId;
+        document.getElementById('qualification_name').value = qualificationName;
+        document.getElementById('college_name').value = collegeName;
+        document.getElementById('board').value = board;
+        document.getElementById('divisions').value = divisions;
+        document.getElementById('grade').value = grade;
+
+        let form = document.getElementById('qualification_form');
+        form.action = "{{ url_for('edit_qualification', id='__id__') }}".replace('__id__', id);
+
+        let submitBtn = document.getElementById('submit_btn');
+        submitBtn.value = "Submit Change";
+    }
+{% endblock %}
