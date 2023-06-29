@@ -12,7 +12,7 @@
         {% endif %}
     {% endwith %}
     <h1>Payroll</h1>
-    <form action="{{ url_for('payroll') }}" method="POST">
+    <form action="{{ url_for('payroll') }}" method="POST" id="Payrollform">
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
@@ -58,7 +58,11 @@
                     <th scope="col">Designation</th>
                     <th scope="col">Total Attendance</th>
                     <th scope="col">Salary Scale</th>
-                    <th scope="col">Obtained Salary</th>
+                    <th scope="col">Gross Salary</th>
+                    <th scope="col">Allowances</th>
+                    <th scope="col">SSF(10%)</th>
+                    <th scope="col">Tax</th>
+                    <th scope="col">Net Salary</th>
                 </tr>
             </thead>
             <tbody id="contentContainer">
@@ -71,12 +75,17 @@
                                 <td>{{ row['Designation'] }}</td>
                                 <td>{{ row['count(*)'] }}</td>
                                 <td>{{ row['Salary'] }}</td>
-                                <td>{{ "%.2f" % (row['count(*)']*row['Salary']/30) }}</td>
+                                <td class="result-cell">{{ "%.2f" % (row['count(*)']*row['Salary']/30) }}</td>
+                                <td><input type="text"  class="allowance-input" id="allowances" name="allowances" value="0"></td>
+                                <td id="ssf" class="ssf-cell"></td>
+                                <td id="tax"  class="tax-cell"></td>
+                                <td id="nettotal" class="nettotal-cell"></td>
+
                             </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                    <td colspan="7">No data Found</td>
+                        <td colspan="7">No data Found</td>
                     </tr>
                 {% endif %}
             </tbody>
@@ -86,26 +95,53 @@
 
 {% endblock %}
 {% block script %}
-    function filterContent() {
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("searchInput");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("contentContainer");
-        tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-            var found = false;
-            for (j = 0; j < tr[i].cells.length; j++) {
-                td = tr[i].cells[j];
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        found = true;
-                        break;
-                    }
-                }
+  window.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('Payrollform');
+        form.addEventListener('submit', function() {
+            var tableRows = document.getElementsByTagName('tr');
+            if (tableRows.length > 1) {
+                var allowanceInputs = document.getElementsByClassName('allowance-input');
+                Array.from(allowanceInputs).forEach(function(input) {
+                    input.addEventListener('input', calculateSum);
+                });
+
+                calculateSumOnLoad();
             }
-            tr[i].style.display = found ? "" : "none";
+        });
+    });
+
+    function calculateSumOnLoad() {
+        var tableRows = document.getElementsByTagName('tr');
+        if (tableRows.length > 1) {
+            for (var i = 1; i < tableRows.length; i++) {
+                calculateSumForRow(tableRows[i]);
+            }
         }
     }
 
+    function calculateSum(event) {
+        var input = event.target;
+        var row = input.parentNode.parentNode;
+        calculateSumForRow(row);
+    }
+
+    function calculateSumForRow(row) {
+        var resultCell = row.querySelector('.result-cell');
+        var allowanceInput = row.querySelector('.allowance-input');
+        var ssfCell = row.querySelector('.ssf-cell');
+        var taxCell = row.querySelector('.tax-cell');
+        var netTotalCell = row.querySelector('.nettotal-cell');
+
+        if (resultCell && allowanceInput && ssfCell && taxCell && netTotalCell) {
+            var result = parseFloat(resultCell.textContent);
+            var allowances = parseFloat(allowanceInput.value);
+            var ssf = (result + allowances) * 0.1;
+            var tax = (result + allowances - ssf) * 0.01;
+            var net = result + allowances - ssf - tax;
+
+            ssfCell.textContent = ssf.toFixed(2);
+            taxCell.textContent = tax.toFixed(2);
+            netTotalCell.textContent = net.toFixed(2);
+        }
+    }
 {% endblock %}

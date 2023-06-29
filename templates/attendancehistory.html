@@ -5,6 +5,9 @@
 {% block maincontainer %}
     <div class="container mt-4">
         <h3>Attendance Records</h3>
+        <div class="search">
+              <input type="text" name="search"  id="searchInput" onkeyup="filterContent()" placeholder="Search..">
+        </div>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -15,7 +18,7 @@
                     <th scope="col">Longitude</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="contentContainer">
                 {% if attendance_records %}
                     {% for record in attendance_records %}
                         <tr>

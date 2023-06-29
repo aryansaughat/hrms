@@ -4,10 +4,17 @@
 {% endblock %}
 {% block maincontainer %}
     <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <script>window.alert("{{ message }}");</script>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
         <div class="row">
             <div class="col-md-6">
                 <h3>Apply For Leave</h3>
-                <form method="post" action="{{ url_for('add_leave') }}">
+                <form method="post" action="{{ url_for('add_leave') }}" onsubmit="return validateForm()" id="leave_form">
                     <table class="form-group">
                         <tr>
                             <th> <label for="employee_id">Employee ID:</label></th>
@@ -34,7 +41,7 @@
                         </tr>
 
                         <tr>
-                            <td colspan="2" style="align-content:center;"><input type="submit" value="Submit"></td>
+                            <td colspan="2" style="align-content:center;"><input type="submit" value="Submit" id="submit_btn"></td>
                         </tr>
                     </table>
                 </form>
@@ -63,8 +70,10 @@
                                 <td>{{ leave['End_Date'] }}</td>
                                 <td>{{ leave['Type'] }}</td>
                                 <td>{{ leave['Reason'] }}</td>
-                                <td><a href="#" class="btn-sm btn-primary">Edit</a>
-                                    <a href="#" class="btn-sm btn-danger">Cancel</a>
+                                <td>
+                                    <a class="btn btn-sm btn-primary mr-1" onclick="editLeave('{{ leave['ID'] }}',
+                                            '{{ leave['Employee_ID'] }}', '{{ leave['Start_Date'] }}', '{{ leave['End_Date'] }}', '{{ leave['Type'] }}', '{{ leave['Reason']  }}')">Edit</a>
+                                    <a href="{{ url_for('cancel_leave',id=leave['ID']) }}" class="btn-sm btn-danger">Cancel</a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -76,4 +85,28 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+    function editLeave(id, employeeId, startdate, enddate, type, reason) {
+        document.getElementById('employee_id').value = employeeId;
+        document.getElementById('fromdate').value = startdate;
+        document.getElementById('todate').value = enddate;
+        document.getElementById('type').value = type;
+        document.getElementById('reason').value = reason;
+        let form = document.getElementById('leave_form');
+        form.action = "{{ url_for('edit_leave', id='__id__') }}".replace('__id__', id);
+        let submitBtn = document.getElementById('submit_btn');
+        submitBtn.value = "Submit Change";
+    }
+    function validateForm() {
+        let fdate = new Date(document.getElementById('fromdate').value);
+        let todate = new Date(document.getElementById('todate').value);
+        if (fdate > todate) {
+            console.log(fdate);
+            console.log(todate);
+            alert('From date cannot be greater than to date');
+            return false;
+        }
+    }
+
 {% endblock %}

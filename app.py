@@ -13,6 +13,7 @@ import pickle
 import os
 import numpy as np
 import nepali_datetime as nd
+import json
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret_key'
@@ -650,7 +651,7 @@ def edit_employee(id):
         for row in result:
             designation = dict(zip(columns, row))
             designations.append(designation)
-        if request.method =='POST':
+        if request.method == 'POST':
             empid = request.form['id']
             name = request.form['name']
             father_name = request.form.get('father_name')
@@ -660,7 +661,7 @@ def edit_employee(id):
             date_of_birth = request.form.get('date_of_birth')
             email = request.form['email']
             phone = request.form['phone']
-            address = request.form['address']
+            address = request.form['address'].strip()
             citizenship_number = request.form.get('citizenship_number')
             designation = request.form['designation']
             department = request.form['department']
@@ -669,14 +670,30 @@ def edit_employee(id):
             termination_reason = request.form.get('termination_reason')
             bank_account_number = request.form.get('bank_account_number')
             marital_status = request.form.get('marital_status')
-            profile_image = request.files['profile_image']
             active = bool(request.form.get('active'))
             termination_date = request.form.get('termination_date')
             pan_number = request.form.get('pan_number')
             spouse_name = request.form.get('spouse_name')
-            flash('Employee updated successfully', 'success')
-            return redirect(url_for('employee_records'))
-
+            username = session['user_id']
+            try:
+                data = (name, email, phone, address, gender, father_name, mother_name, grandfather_name, designation,
+                        department, citizenship_number, date_of_birth, joining_date, active, username, terminated,
+                        termination_date, termination_reason, bank_account_number, pan_number, marital_status,
+                        spouse_name, empid)
+                update_query = '''UPDATE employees
+                    SET Name = ?, Email = ?, Phone = ?, Address = ?, Gender = ?, Father_Name = ?, Mother_Name = ?,
+                    Grandfather_Name = ?, Designation = ?, Department = ?, Citizenship_number = ?, Date_Of_Birth = ?,
+                    Joining_Date = ?, active = ?, Updated_By = ?, terminated = ?, termination_date = ?, 
+                    termination_reason = ?,
+                    bank_account_number = ?, PAN_number = ?, marital_status = ?, spouse_name = ? WHERE ID = ?'''
+                c.execute(update_query, data)
+                conn.commit()
+                if conn.total_changes > 0:
+                    flash('Employee updated successfully', 'success')
+                    return redirect(url_for('employee_records'))
+            except Exception as e:
+                flash('Error adding qualification: ' + str(e), 'error')
+                return redirect(url_for('employee_records'))
     return render_template('editemployee.html', employee=employees, depart=departments, designation=designations)
 
 
@@ -1193,6 +1210,30 @@ def add_leave():
     return render_template('addleave.html', leaves=leaves, users=users)
 
 
+@app.route('/edit_ leave/<id>', methods=['GET', 'POST'])
+@login_required
+def edit_leave(id):
+    with sqlite3.connect(DATABASE) as conn:
+        c = conn.cursor()
+        if request.method == 'POST':
+            employee_id = request.form['emp_id']
+            start_date = request.form['fromdate']
+            end_date = request.form['todate']
+            typ = request.form['type']
+            reason = request.form['reason']
+            try:
+                update_query = '''UPDATE Leaves SET start_date=?, end_date=?, type=?, reason=?
+                                    WHERE Id=? and Employee_ID=?'''
+                c.execute(update_query,(start_date, end_date, typ, reason, id, employee_id,))
+                conn.commit()
+                if conn.total_changes > 0:
+                    flash('Leave Updated successfully', 'success')
+                    return redirect(url_for('add_leave'))
+            except Exception as e:
+                flash('Error While updating ' + str(e), 'error')
+                return redirect(url_for('add_leave'))
+    return redirect(url_for('add_leave'))
+
 @app.route('/approve_ leave/<int:id>', methods=['GET', 'POST'])
 @login_required
 def approve_leave(id):
@@ -1221,6 +1262,20 @@ def reject_leave(id):
     return redirect(url_for('leave_management'))
 
 
+@app.route('/cancel_ leave/<int:id>', methods=['GET', 'POST'])
+@login_required
+def cancel_leave(id):
+    username = session['user_id']
+    with sqlite3.connect(DATABASE) as conn:
+        c = conn.cursor()
+        status = 'cancelled'
+        update_query = "UPDATE Leaves SET Status= :s, Approved_by= :un Where id= :i"
+        c.execute(update_query, {"s": status, "un": username, "i": id})
+        conn.commit()
+        flash('Leave canceled successfully', 'success')
+    return redirect(url_for('add_leave'))
+
+
 @app.route('/leave_history')
 @login_required
 def leave_history():
@@ -1238,66 +1293,68 @@ def leave_history():
     return render_template('leavehistory.html', leaves=leaves)
 
 
-@app.route('/performance_prediction')
+@app.route('/performance_prediction', methods=['GET', 'POST'])
 @login_required
 def performance_prediction():
     with sqlite3.connect(DATABASE) as conn:
         c = conn.cursor()
         c.execute('''SELECT * FROM performances''')
         result = c.fetchall()
-        with open('D:/project/hrms/random_forestmodel.pkl', 'rb') as file:
-            model = pickle.load(file)
-            new_data = {
-                'education_level_High School Diploma': [0],
-                'education_level_Bachelor\'s Degree': [0],
-                'education_level_Master\'s Degree': [1],
-                'education_level_PhD': [0],
-                'department_IT': [1],
-                'department_Sales': [0],
-                'years_of_experience': [5],
-                'absences': [10]
-            }
-            data_arrays = [np.array(values) for values in new_data.values()]
-            input_data = np.column_stack(data_arrays)
-            prediction = model.predict(input_data)
-            print(prediction)
-    return render_template('performance.html', performances=result, prediction=prediction)
-
-
-def add_performance_db(emp_id, age, experience, comments):
-    with sqlite3.connect(DATABASE) as conn:
-        c = conn.cursor()
-        c.execute('''INSERT INTO performances (Employee_ID, Age, Experience, Comment)
-                VALUES (?, ?, ?, ?)''', (emp_id, age, experience, comments))
-        conn.commit()
-
-
-@app.route('/add_performance', methods=['GET', 'POST'])
-def add_performance():
-    if request.method == 'POST':
-        emp_id = request.form['emp_id']
-        age = request.form['age']
-        experience = request.form['experience']
-        comments = request.form['comments']
-        add_performance_db(emp_id, age, experience, comments)
-        flash('Performance record added successfully')
-        return redirect(url_for('performance_management'))
-    else:
-        return redirect(url_for('performance_management'))
-
-
-@app.route('/edit_performance', methods=['GET', 'POST'])
-def edit_performance():
-    if request.method == 'POST':
-        emp_id = request.form['emp_id']
-        age = request.form['age']
-        experience = request.form['experience']
-        comments = request.form['comments']
-        add_performance_db(emp_id, age, experience, comments)
-        flash('Performance record added successfully')
-        return redirect(url_for('performance_management'))
-    else:
-        return redirect(url_for('performance_management'))
+        columns = [desc[0] for desc in c.description]
+        performances = []
+        for row in result:
+            performance = dict(zip(columns, row))
+            performances.append(performance)
+        if request.method == 'POST':
+            name = request.form['name']
+            age = request.form['age']
+            education = request.form['education']
+            department = request.form['Department']
+            experience = request.form['experience']
+            username = session['user_id']
+            try:
+                with open('D:/project/hrms/random_forestmodel.pkl', 'rb') as file:
+                    model = pickle.load(file)
+                    new_data = {
+                        'education_level_High School Diploma': [0],
+                        'education_level_Bachelor\'s Degree': [0],
+                        'education_level_Master\'s Degree': [1],
+                        'education_level_PhD': [0],
+                        'department_IT': [1],
+                        'department_Sales': [0],
+                        'years_of_experience': [5],
+                        'absences': [10]
+                    }
+                    if education == "High School":
+                        new_data['education_level_High School Diploma'][0] = 1
+                    elif education == "Bachelor":
+                        new_data['education_level_Bachelor\'s Degree'][0] = 1
+                    elif education == "Master":
+                        new_data['education_level_Master\'s Degree'][0] = 1
+                    elif education == "PHD":
+                        new_data['education_level_PhD'][0] = 1
+                    if department == "IT":
+                        new_data['department_IT'][0] = 1
+                    elif department == "Sales":
+                        new_data['department_Sales'][0] = 1
+                    new_data['years_of_experience'][0] = int(experience)
+                    new_data['absences'][0] = 5
+                    data_arrays = [np.array(values) for values in new_data.values()]
+                    input_data = np.column_stack(data_arrays)
+                    prediction = model.predict(input_data)
+                    prediction_str = str(prediction)
+                    prediction_str = prediction_str.strip("['']")
+                    insert = '''INSERT INTO Performances(Name, Age, Experience, Education, Department,Prediction,
+                                Entered_By) VALUES (?, ?, ?, ?, ?, ?, ?)'''
+                    c.execute(insert, (name, age, experience, education, department, prediction_str, username))
+                    conn.commit()
+                    if conn.total_changes > 0:
+                        flash("Performance Predicted Successfully as: " + prediction_str, 'success')
+                        return redirect(url_for('performance_prediction'))
+            except Exception as e:
+                flash("Error Occured while doing Performance Prediction: " + str(e), 'success')
+                return redirect(url_for('performance_prediction'))
+    return render_template('performance.html', performances=performances)
 
 
 @app.route('/index', methods=['GET', 'POST'])

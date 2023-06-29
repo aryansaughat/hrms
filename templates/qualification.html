@@ -64,7 +64,7 @@
                     <div class="custom-file">
                         <input type="file" class="custom-file-input" name="doc_qualification" id='doc_qualification'
                                onchange="validateFile(this)"required>
-                        <label class="custom-file-label" for="doc_qualification">Experience Letter: </label>
+                        <label class="custom-file-label" for="doc_qualification">Upload  Education Certificate: </label>
                         <a class="required" style="font-size: 1em;" id="text">Files should be on Pdf format and less than 500 KB</a>
                         <br><small id="file_error" class="text-danger"></small><br>
                     </div>
@@ -127,10 +127,18 @@
         document.getElementById('board').value = board;
         document.getElementById('divisions').value = divisions;
         document.getElementById('grade').value = grade;
-
+        let fileInput = document.getElementById('doc_qualification');
+        let fileLabel = document.querySelector('label[for="doc_qualification"]');
+        let fileText = document.getElementById('text');
+        let fileError = document.getElementById('file_error');
+                fileInput.removeAttribute("required");
+                fileInput.disabled = true;
+                fileInput.style.display = 'none';
+                fileLabel.style.display = 'none';
+                fileText.style.display = 'none';
+                fileError.style.display = 'none';
         let form = document.getElementById('qualification_form');
         form.action = "{{ url_for('edit_qualification', id='__id__') }}".replace('__id__', id);
-
         let submitBtn = document.getElementById('submit_btn');
         submitBtn.value = "Submit Change";
     }

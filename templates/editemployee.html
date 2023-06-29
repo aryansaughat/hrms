@@ -27,7 +27,7 @@
                 </div>
                 <div class="form-group">
                     <label for="date_of_birth">Date of Birth:</label>
-                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ row['Date_Of_Birth'] }}" required>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value= "{{ row['Date_Of_Birth'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="form-group">
                     <label for="terminated">Terminated:</label>
-                    <input type="checkbox" name="terminated">
+                    <input type="checkbox" name="terminated" {% if row['terminated'] %}checked{% endif %}>
                 </div>
                 <div class="form-group">
                     <label for="termination_reason">Termination Reason:</label>
@@ -66,10 +66,12 @@
                         <option value="{{ row['maritial_status'] }}" selected>{{ row['maritial_status'] }}</option>
                         {% if row['maritial_status'] == 'Single' %}
                             <option value="Married">Married</option>
+                        {% elif row['maritial_status'] == 'Married' %}
+                            <option value="Single">Single</option>
                         {% else %}
                             <option value="Single">Single</option>
+                            <option value="Married">Married</option>
                         {% endif %}
-
                     </select>
                 </div>
             </div>
@@ -126,11 +128,11 @@
                 </div>
                 <div class="form-group">
                     <label for="active">Active:</label>
-                    <input type="checkbox" name="active">
+                    <input type="checkbox" name="active" {% if row['active'] %}checked{% endif %}>
                 </div>
                 <div class="form-group">
                     <label for="termination_date">Termination Date:</label>
-                    <input type="date" name="termination_date" class="form-control">
+                    <input type="date" name="termination_date" class="form-control" value="{{ row['termination_date'] }}">
                 </div>
                 <div class="form-group">
                     <label for="pan_number">PAN Number:</label>
@@ -142,7 +144,7 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Add Employee</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
         <a href="{{ url_for('employee_records')}}" class="btn btn btn-primary ">Cancel</a>
     </form>
         {% endfor %}

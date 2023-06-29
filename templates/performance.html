@@ -4,55 +4,91 @@
 {% endblock %}
 {% block maincontainer %}
     <div class="container mt-4">
-            <h1>Performance Management</h1>
+         {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>window.alert("{{ message }}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h3>Performance Prediction</h3><br>
+        <form method="post" action="{{ url_for('performance_prediction') }}">
+            <table class="form-group">
+                <tr>
+                    <th> <label for="name">Name :</label></th>
+                    <td><input type="text" name="name" id="name" required></td>
+                </tr>
+                <tr>
+                    <th> <label for="age">Age :</label></th>
+                    <td><input type="text" name="age" id="age"  required></td>
+                </tr>
+                <tr>
+                    <th> <label for="education">Education</label></th>
+                    <td>
+                        <select id="education" name="education" required>
+                            <option value="" selected disabled>Highest level of education</option>
+                            <option value="PHD">PHD</option>
+                            <option value="Master">Master's Degree</option>
+                            <option value="Bachelor">Bachelor's Degree</option>
+                            <option value="High School">High School</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th> <label for="Department">Department</label></th>
+                    <td>
+                        <select id="Department" name="Department" required>
+                            <option value="" selected disabled>Select Department</option>
+                            <option value="IT">IT</option>
+                            <option value="Sales">Sales</option>
+                            <option value="HR">Bachelor's Degree</option>
+                            <option value="Account">High School</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th> <label for="Experience">Years of Experience :</label></th>
+                    <td><input type="text" name="experience" id="experience" required></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Submit"></td>
+                </tr>
+            </table>
+        </form>
+        <br>
+        <div class="Result">
+            <h4>Prediction Results</h4>
             <table class="table table-striped">
-                <thead>
+            <thead>
                     <tr>
-                        <th>Employee ID</th>
+                        <th>S.N.</th>
+                        <th>Name</th>
                         <th>Age</th>
                         <th>Experience</th>
-                        <th>Comments</th>
-                        <th>Action</th>
+                        <th>Education Level</th>
+                        <th>Department</th>
+                        <th>Prediction</th>
                     </tr>
-                </thead>
-                <tbody>
-                {% if prediction %}
-                    {% for prediction in prediction %}
-                    <tr>
-                        <td colspan="4">{{ prediction }}</td>
-
-                        <td><a href="{{ url_for('edit_performance', id=prediction[0]) }}">Edit</a></td>
-                    </tr>
+            </thead>
+            <tbody>
+                {% if performances %}
+                    {% for row in performances %}
+                        <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ row['Name'] }}</td>
+                        <td>{{ row['Age'] }}</td>
+                        <td>{{ row['Experience'] }}</td>
+                        <td>{{ row['Education'] }}</td>
+                        <td>{{ row['Department'] }}</td>
+                        <td>{{ row['Prediction'] }}</td>
+                        </tr>
                     {% endfor %}
                 {% else %}
-                    <tr><td colspan="4"><p>No performance data available.</p></td></tr>
+                    <tr><td colspan="7"><p>No performance prediction data available.</p></td></tr>
                 {% endif %}
-                </tbody>
-            </table>
-        <hr>
-        <h2>Add Performance</h2>
-  <form method="post" action="{{ url_for('add_performance') }}">
-      <table class="form-group">
-          <tr>
-              <th> <label for="employee_id">Employee ID:</label></th>
-              <td><input type="text" name="emp_id" id="employee_id" required></td>
-          </tr>
-          <tr>
-              <th> <label for="age">Age :</label></th>
-              <td><input type="text" name="age" id="age"  required></td>
-          </tr>
-          <tr>
-              <th> <label for="Experience">Experience :</label></th>
-              <td><input type="text" name="experience" id="experience" required></td>
-          </tr>
-          <tr>
-              <th> <label for="comments">Comments:</label></th>
-              <td><textarea name="comments" id="comments"></textarea></td>
-          </tr>
-          <tr>
-              <td colspan="2"><input type="submit" value="Submit"></td>
-          </tr>
-      </table>
-  </form>
+            </tbody>
+        </table>
+        </div>
+
     </div>
 {% endblock %}

@@ -66,11 +66,14 @@ c.execute('''CREATE TRIGGER IF NOT EXISTS update_Leaves_approved_at
 
 c.execute('''CREATE TABLE IF NOT EXISTS Performances (
              ID INTEGER PRIMARY KEY AUTOINCREMENT,
-             Employee_ID INTEGER NOT NULL,
+             Name TEXT NOT NULL,
              Age INTEGER NOT NULL,
-             Experience TEXT NOT NULL,
-             Comment TEXT NOT NULL,
-             FOREIGN KEY (Employee_ID) REFERENCES Employees(ID))''')
+             Experience INT NOT NULL,
+             Education TEXT NOT NULL,
+             Department TEXT NOT NULL,
+             Performance TEXT NOT NULL,
+             Entered_At TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+             Entered_By TEXT)''')
 
 c.execute('''CREATE TABLE IF NOT EXISTS Qualifications (
              ID INTEGER PRIMARY KEY AUTOINCREMENT,

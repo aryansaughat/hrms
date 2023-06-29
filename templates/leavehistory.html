@@ -7,7 +7,10 @@
 {% block maincontainer %}
     <div class="container">
         <h2>Leave History</h2>
-        <table class="table table-bordered">
+        <div class="search">
+              <input type="text" name="search"  id="searchInput" onkeyup="filterContent()" placeholder="Search..">
+        </div>
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>S.N.</th>
@@ -16,9 +19,11 @@
                     <th>End Date</th>
                     <th>Reason</th>
                     <th>Status</th>
+                    <th>Approved by</th>
+                    <th>Approved Date</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="contentContainer">
                 {% for leave in leaves %}
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
@@ -27,6 +32,8 @@
                         <td>{{ leave['End_Date'] }}</td>
                         <td>{{ leave['Reason'] }}</td>
                         <td>{{ leave['Status'] }}</td>
+                        <td>{{ leave['Approved_by'] }}</td>
+                        <td>{{ leave['Approved_at'].split(' ')[0] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
