@@ -340,10 +340,11 @@ def forgot_password():
 def send_password_email(recipient, new_password, username):
     subject = 'Password Reset'
     msg = Message(subject=subject, sender='noreply.hrms2@gmail.com', recipients=[recipient])
-    with open("G:/Kapil/study/final project/hr/static/images/logo.png", "rb") as logo_file:
+    with open("static/images/logo.png", "rb") as logo_file:
         logo_data = logo_file.read()
         logo_base64 = base64.b64encode(logo_data).decode("utf-8")
-    email_content = render_template("resetpasswordtemplate.html", un=username, password=new_password, logo_base64=logo_base64)
+    email_content = render_template("resetpasswordtemplate.html", un=username, password=new_password,
+                                    logo_base64=logo_base64, logo_url="D:/project/hrms/static/images/logo.png")
     msg.html = email_content
     mail.send(msg)
     return 'Password reset email sent'
@@ -620,14 +621,63 @@ def add_employee():
     return render_template('add_employee.html', depart=departments, designation=designations)
 
 
-@app.route('/edit_employee/<int:id>')
+@app.route('/edit_employee/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_employee(id):
     with sqlite3.connect(DATABASE) as conn:
         c = conn.cursor()
-        c.execute('''SELECT * FROM Employees''')
-        conn.commit()
-    return redirect(url_for('employee_records'))
+        select = '''SELECT * FROM Employees WHERE ID=?'''
+        c.execute(select, (id,))
+        result = c.fetchall()
+        columns = [desc[0] for desc in c.description]
+        employees = []
+        for row in result:
+            employee = dict(zip(columns, row))
+            employees.append(employee)
+        select_query = "SELECT * FROM Departments"
+        c.execute(select_query)
+        result = c.fetchall()
+        columns = [desc[0] for desc in c.description]
+        departments = []
+        for row in result:
+            department = dict(zip(columns, row))
+            departments.append(department)
+        select_query = "SELECT * FROM Designations"
+        c.execute(select_query)
+        result = c.fetchall()
+        columns = [desc[0] for desc in c.description]
+        designations = []
+        for row in result:
+            designation = dict(zip(columns, row))
+            designations.append(designation)
+        if request.method =='POST':
+            empid = request.form['id']
+            name = request.form['name']
+            father_name = request.form.get('father_name')
+            mother_name = request.form.get('mother_name')
+            grandfather_name = request.form.get('grandfather_name')
+            gender = request.form['gender']
+            date_of_birth = request.form.get('date_of_birth')
+            email = request.form['email']
+            phone = request.form['phone']
+            address = request.form['address']
+            citizenship_number = request.form.get('citizenship_number')
+            designation = request.form['designation']
+            department = request.form['department']
+            joining_date = request.form.get('joining_date')
+            terminated = bool(request.form.get('terminated'))
+            termination_reason = request.form.get('termination_reason')
+            bank_account_number = request.form.get('bank_account_number')
+            marital_status = request.form.get('marital_status')
+            profile_image = request.files['profile_image']
+            active = bool(request.form.get('active'))
+            termination_date = request.form.get('termination_date')
+            pan_number = request.form.get('pan_number')
+            spouse_name = request.form.get('spouse_name')
+            flash('Employee updated successfully', 'success')
+            return redirect(url_for('employee_records'))
+
+    return render_template('editemployee.html', employee=employees, depart=departments, designation=designations)
 
 
 @app.route('/Delete_employee/<int:id>')
@@ -1195,13 +1245,17 @@ def performance_prediction():
         c = conn.cursor()
         c.execute('''SELECT * FROM performances''')
         result = c.fetchall()
-        with open('G:/Kapil/study/final project/New folder/hrms/svm_model.pkl', 'rb') as file:
+        with open('D:/project/hrms/random_forestmodel.pkl', 'rb') as file:
             model = pickle.load(file)
             new_data = {
-                'MaritalStatusID': [1],
-                'GenderID': [0],
-                'EmpStatusID': [5],
-                'DeptID': [5],
+                'education_level_High School Diploma': [0],
+                'education_level_Bachelor\'s Degree': [0],
+                'education_level_Master\'s Degree': [1],
+                'education_level_PhD': [0],
+                'department_IT': [1],
+                'department_Sales': [0],
+                'years_of_experience': [5],
+                'absences': [10]
             }
             data_arrays = [np.array(values) for values in new_data.values()]
             input_data = np.column_stack(data_arrays)

@@ -99,11 +99,11 @@
                             <td>{{ qualification['Division'] }}</td>
                             <td>{{ qualification['Grade'] }}</td>
                             {% if qualification['doc_file_path'] %}
-                            <td><a href="{{ url_for('display_file', filename=qualification['doc_file_path']) }}"
+                                <td><a href="{{ url_for('display_file', filename=qualification['doc_file_path']) }}"
                                    target="_blank">view document</a></td>
-                        {% else %}
-                            <td>No document found</td>
-                        {% endif %}
+                            {% else %}
+                                <td>No document found</td>
+                            {% endif %}
                             <td>
                                 <a  class="btn btn-sm btn-primary mr-1" onclick="editQualification('{{ qualification['ID'] }}', '{{ qualification['Employee_ID'] }}', '{{ qualification['Level'] }}', '{{ qualification['College_Name'] }}', '{{ qualification['Board'] }}', '{{ qualification['Division'] }}', '{{ qualification['Grade'] }}')">Edit</a>
                                 <a href="{{ url_for('delete_qualification', id=qualification['ID' ]) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>

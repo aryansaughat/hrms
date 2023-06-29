@@ -1,7 +1,7 @@
 {% extends 'verticalnav.html' %}
 
 {% block title %}
-    HRMS - Experience
+    HRMS - Profile
 {% endblock %}
 
 {% block maincontainer %}
@@ -121,6 +121,7 @@
                     <th>Board</th>
                     <th>Division</th>
                     <th>Grade</th>
+                    <th scope="col"> Qualification Doc</th>
                 </tr>
             </thead>
             <tbody>
@@ -132,6 +133,12 @@
                         <td>{{ qualification['Board'] }}</td>
                         <td>{{ qualification['Division'] }}</td>
                         <td>{{ qualification['Grade'] }}</td>
+                        {% if qualification['doc_file_path'] %}
+                            <td><a href="{{ url_for('display_file', filename=qualification['doc_file_path']) }}"
+                                   target="_blank">view document</a></td>
+                        {% else %}
+                            <td>No document found</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
       </tbody>
@@ -147,6 +154,7 @@
                     <th>Position</th>
                     <th>Duration</th>
                     <th>Job Description</th>
+                    <th scope="col">Experience Letter</th>
                 </tr>
             </thead>
             <tbody>
@@ -157,6 +165,12 @@
                     <td>{{ experience['Job_Title'] }}</td>
                     <td>{{ experience['Duration'] }}</td>
                      <td>{{ experience['Job_Description'] }}</td>
+                    {% if experience['doc_file_path'] %}
+                        <td><a href="{{ url_for('display_file', filename=experience['doc_file_path']) }}"
+                                   target="_blank">view document</a></td>
+                    {% else %}
+                        <td>No document found</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>

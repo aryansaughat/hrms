@@ -1,48 +1,52 @@
 {% extends 'verticalnav.html' %}
 {% block title %}
-    HRMS - Add Employee
+    HRMS - Edit Employee
 {% endblock %}
 
 {% block maincontainer %}
 <div class="container md">
     <div class="container-fluid" style="margin-bottom: 2em;">
     <h1>Add Employee</h1>
-    <form method="POST" action="{{ url_for('add_employee') }}" enctype="multipart/form-data" style="width: 60%; position: absolute; left: 30em; ">
+    {% if employee %}
+        {% for row in employee %}
+      <form method="POST" action="{{ url_for('edit_employee', id=row['ID']) }}" enctype="multipart/form-data" style="width: 60%; position: absolute; left: 30em; ">
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="ID"> Employee ID number:</label>
-                    <input type="text" class="form-control" id="id" name="id">
+                    <input type="text" class="form-control" id="id" name="id" value="{{ row['ID'] }}" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="father_name">Father's Name:</label>
-                    <input type="text" class="form-control" id="father_name" name="father_name" required>
+                    <input type="text" class="form-control" id="father_name" name="father_name" required value="{{ row['Father_Name'] }}">
                 </div>
                  <div class="form-group">
                     <label for="grandfather_name">Grandfather's Name:</label>
-                    <input type="text" class="form-control" id="grandfather_name" name="grandfather_name" required>
+                    <input type="text" class="form-control" id="grandfather_name" name="grandfather_name" value="{{ row['Grandfather_Name'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="date_of_birth">Date of Birth:</label>
-                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ row['Date_Of_Birth'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ row['Email'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="designation">Designation:</label>
                     <select class="form-control" id="designation" name="designation" required>
-                        <option value="" disabled>Select Designation</option>
-                            {% for row in designation %}
-                                <option value="{{ row['Post_Name'] }}">{{ row['Post_Name'] }}</option>
+                        <option value="{{ row['Designation'] }}" selected>{{ row['Designation'] }}</option>
+                            {% for result in designation %}
+                                {% if row['Designation'] != result['Post_Name'] %}
+                                    <option value="{{ result['Post_Name'] }}">{{ result['Post_Name'] }}</option>
+                                {% endif %}
                             {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="joining_date">Joining Date:</label>
-                    <input type="date" class="form-control" id="joining_date" name="joining_date" required>
+                    <input type="date" class="form-control" id="joining_date" name="joining_date" value="{{ row['Joining_Date'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="terminated">Terminated:</label>
@@ -50,66 +54,75 @@
                 </div>
                 <div class="form-group">
                     <label for="termination_reason">Termination Reason:</label>
-                    <input type="text" name="termination_reason" class="form-control">
+                    <input type="text" name="termination_reason" class="form-control" value="{{ row['termination_reason'] }}">
                 </div>
                 <div class="form-group">
                     <label for="bank_account_number">Bank Account Number:</label>
-                    <input type="text" name="bank_account_number" class="form-control">
+                    <input type="text" name="bank_account_number" class="form-control" value="{{ row['bank_account_number'] }}">
                 </div>
                  <div class="form-group">
                     <label for="marital_status">Marital Status:</label>
-                     <select class="form-control" id="marital_status" name="marital_status" required>
-                        <option value="" disabled>Select One</option>
+                    <select class="form-control" id="marital_status" name="marital_status" required>
+                        <option value="{{ row['maritial_status'] }}" selected>{{ row['maritial_status'] }}</option>
+                        {% if row['maritial_status'] == 'Single' %}
                             <option value="Married">Married</option>
+                        {% else %}
                             <option value="Single">Single</option>
+                        {% endif %}
 
                     </select>
-                </div>
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" name="profile_image" id='profile_image' onchange="validateimage(this)"required>
-                    <label class="custom-file-label" for="profile_image">Profile photo: </label>
-                    <a class="required" style="font-size: 1em;">Images should be on Jpeg/PNG format and less than 500 KB</a>
-                    <br><small id="profile_image_error" class="text-danger"></small>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="name"> Full Name:</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ row['Name'] }}" required>
                 </div>
                 <div class="form-group">
                    <label for="mother_name">Mother's Name:</label>
-                    <input type="text" class="form-control" id="mother_name" name="mother_name" required>
+                    <input type="text" class="form-control" id="mother_name" name="mother_name" value="{{ row['Mother_Name'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="address">Address:</label>
-                    <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                    <textarea class="form-control" id="address" name="address" rows="2"  required>
+                        {{ row['Address']|trim }}
+                    </textarea>
                 </div>
                 <div class="form-group">
                     <label for="gender">Gender:</label>
                     <select class="form-control" id="gender" name="gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
+                        <option value="{{ row['Gender'] }}" selected>{{ row['Gender'] }}</option>
+                        {% if row['Gender']=='Male' %}
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        {% elif row['Gender']=='Female' %}
+                            <option value="male">Male</option>
+                            <option value="other">Other</option>
+                        {% else %}
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        {% endif     %}
+
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone:</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                    <input type="tel" class="form-control" id="phone" name="phone" value="{{ row['Phone'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="department">Department:</label>
-                    <select class="form-control" id="department" name="department" required>
-                        <option value="" disabled>Select Department</option>
-                            {% for row in depart %}
-                                <option value="{{ row['Depart_Name'] }}">{{ row['Depart_Name'] }}</option>
+                    <select class="form-control" id="department" name="department"  required>
+                        <option value="{{ row['Department'] }}">{{ row['Department'] }}</option>
+                            {% for result in depart %}
+                                {% if row['Department'] != result['Depart_Name'] %}
+                                    <option value="{{ result['Depart_Name'] }}">{{ result['Depart_Name'] }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                 </div>
                 <div class="form-group">
                     <label for="citizenship_number">Citizenship Number:</label>
-                    <input type="text" class="form-control" id="citizenship_number" name="citizenship_number" required>
+                    <input type="text" class="form-control" id="citizenship_number" name="citizenship_number" value="{{ row['Citizenship_number'] }}" required>
                 </div>
                 <div class="form-group">
                     <label for="active">Active:</label>
@@ -121,17 +134,19 @@
                 </div>
                 <div class="form-group">
                     <label for="pan_number">PAN Number:</label>
-                    <input type="text" name="pan_number" class="form-control">
+                    <input type="text" name="pan_number" class="form-control" value="{{ row['PAN_number'] }}">
                 </div>
                 <div class="form-group">
                     <label for="spouse_name">Spouse Name:</label>
-                    <input type="text" name="spouse_name" class="form-control">
+                    <input type="text" name="spouse_name" class="form-control" value="{{ row['Spouse_Name'] }}">
                 </div>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Add Employee</button>
         <a href="{{ url_for('employee_records')}}" class="btn btn btn-primary ">Cancel</a>
     </form>
+        {% endfor %}
+    {% endif %}
     </div>
 </div>
 {% endblock %}
